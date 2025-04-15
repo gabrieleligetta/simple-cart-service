@@ -5,9 +5,6 @@ services:
       dockerfile: Dockerfile
       target: ${ENV}
     container_name: my_cart_app
-    volumes:
-      - ./:/app
-      - /app/node_modules
     ports:
       - "3000:3000"
     depends_on:
