@@ -22,6 +22,7 @@ import * as Joi from 'joi';
         POSTGRES_DB: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_DURATION: Joi.string().required(),
+        DROP_SCHEMA: Joi.boolean().required(),
       }),
       envFilePath: './.env',
     }),

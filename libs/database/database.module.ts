@@ -22,7 +22,8 @@ export class DatabaseModule {
               database: configService.get<string>('POSTGRES_DB'),
               autoLoadEntities: true,
               synchronize: true,
-              logging: ['query', 'error'],
+              logging: false,
+              dropSchema: configService.get<boolean>('DROP_SCHEMA'),
             };
           },
         }),
