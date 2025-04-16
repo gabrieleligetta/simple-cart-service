@@ -2,28 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { AbstractRepositoryBase } from '../../libs/repo/abstact.repository';
 
 @Injectable()
-export class UserRepository {
-  constructor(
-    @InjectRepository(UserEntity)
-    private readonly repo: Repository<UserEntity>,
-  ) {}
-
-  async findByEmail(email: string): Promise<UserEntity | null> {
-    return this.repo.findOne({ where: { email } });
+export class UserRepository extends AbstractRepositoryBase<UserEntity> {
+  constructor(@InjectRepository(UserEntity) repo: Repository<UserEntity>) {
+    super(repo);
   }
 
-  async findById(id: number): Promise<UserEntity | null> {
-    return this.repo.findOne({ where: { id } });
-  }
-
-  async createUser(email: string, hashedPassword: string): Promise<UserEntity> {
-    const newUser = this.repo.create({ email, password: hashedPassword });
-    return this.repo.save(newUser);
-  }
-
-  async getAllUsers(): Promise<UserEntity[]> {
-    return this.repo.find();
+  /* No need for a dedicated method anymore */
+  async findByEmail(email: string) {
+    return this.findBy('email', email.toLowerCase());
   }
 }
