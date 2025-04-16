@@ -1,10 +1,5 @@
 // src/product/product.service.ts
-import {
-  HttpCode,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductRepository } from './product.repository';
 import { CreateProductDto, UpdateProductDto } from './libs/dto/product.dto';
 import { PaginatedQuery } from '../../libs/dto/paginatedQuery.dto';
