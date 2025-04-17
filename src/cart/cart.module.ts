@@ -5,10 +5,6 @@ import { CartRepository } from './repositories/cart.repository';
 import { CartItemRepository } from './repositories/cartItem.repository';
 import { CartService } from './cart.service';
 import { Module } from '@nestjs/common';
-import { ProductService } from '../product/product.service';
-import { DiscountService } from '../discount/discount.service';
-import { ProductRepository } from '../product/product.repository';
-import { DiscountRepository } from '../discount/discount.repository';
 import { ProductModule } from '../product/product.module';
 import { DiscountModule } from '../discount/discount.module';
 
