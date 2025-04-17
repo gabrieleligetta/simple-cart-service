@@ -5,8 +5,10 @@ import { DatabaseModule } from '../libs/database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
-import * as Joi from 'joi';
 import { ProductModule } from './product/product.module';
+import { CartModule } from './cart/cart.module';
+import { DiscountModule } from './discount/discount.module';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { ProductModule } from './product/product.module';
     AuthModule,
     UserModule,
     ProductModule,
+    DiscountModule,
+    CartModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({

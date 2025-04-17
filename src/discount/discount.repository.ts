@@ -1,15 +1,14 @@
-// src/product/product.repository.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
-import { ProductEntity } from './product.entity';
 import { AbstractRepositoryBase } from '../../libs/repo/abstact.repository';
+import { DiscountEntity } from './discount.entity';
 
 @Injectable()
-export class ProductRepository extends AbstractRepositoryBase<ProductEntity> {
+export class DiscountRepository extends AbstractRepositoryBase<DiscountEntity> {
   constructor(
-    @InjectRepository(ProductEntity) repo: Repository<ProductEntity>,
+    @InjectRepository(DiscountEntity)
+    repo: Repository<DiscountEntity>,
   ) {
     super(repo);
   }

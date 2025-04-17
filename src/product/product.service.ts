@@ -1,4 +1,3 @@
-// src/product/product.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductRepository } from './product.repository';
 import { CreateProductDto, UpdateProductDto } from './libs/dto/product.dto';

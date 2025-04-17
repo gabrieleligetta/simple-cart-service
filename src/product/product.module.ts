@@ -1,4 +1,3 @@
-// src/product/product.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductEntity } from './product.entity';
@@ -10,6 +9,6 @@ import { ProductController } from './product.controller';
   imports: [TypeOrmModule.forFeature([ProductEntity])],
   providers: [ProductRepository, ProductService],
   controllers: [ProductController],
-  exports: [ProductService, ProductRepository],
+  exports: [ProductService],
 })
 export class ProductModule {}
