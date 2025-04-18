@@ -47,7 +47,7 @@ export class CartService {
       });
     }
 
-    return this.cartRepository.findByUserId(user.id);
+    return await this.viewCart(user);
   }
 
   async removeProduct(user: UserEntity, productId: number, quantity?: number) {
@@ -67,7 +67,7 @@ export class CartService {
       });
     }
 
-    return this.cartRepository.findByUserId(user.id);
+    return await this.viewCart(user);
   }
 
   async applyDiscount(user: UserEntity, code: string) {
@@ -79,29 +79,47 @@ export class CartService {
       throw new BadRequestException('Discount expired');
 
     cart.discount = discount;
-    return this.cartRepository.update(cart.id, { discount });
+    await this.cartRepository.update(cart.id, { discount });
+    return await this.viewCart(user);
+  }
+
+  async removeDiscount(user: UserEntity) {
+    const cart = await this.getOrCreateUserCart(user);
+    if (!cart.discount) {
+      throw new NotFoundException('There is no active discount on this cart');
+    }
+    await this.cartRepository.update(cart.id, { discount: null });
+    return await this.viewCart(user);
   }
 
   async viewCart(user: UserEntity) {
     const cart = await this.getOrCreateUserCart(user);
-    const items = cart.items.map((item) => ({
-      productId: item.product.id,
-      description: item.product.description,
-      unitPrice: item.product.price,
-      quantity: item.quantity,
-      subtotal: item.product.price * item.quantity,
-    }));
 
-    const subtotal = items.reduce((sum, i) => sum + i.subtotal, 0);
+    const items: Array<{
+      productId: number;
+      description?: string;
+      unitPrice: number;
+      quantity: number;
+      subtotal: number;
+    }> = [];
+
+    let subtotal = 0;
+    for (const item of cart.items) {
+      const rowSubtotal = item.product.price * item.quantity;
+      items.push({
+        productId: item.product.id,
+        description: item.product.description,
+        unitPrice: item.product.price,
+        quantity: item.quantity,
+        subtotal: rowSubtotal,
+      });
+      subtotal += rowSubtotal;
+    }
+
     const discountAmount = this.calculateDiscount(subtotal, cart.discount);
     const total = subtotal - discountAmount;
 
-    return {
-      items,
-      subtotal,
-      discount: discountAmount,
-      total,
-    };
+    return { items, subtotal, discount: discountAmount, total };
   }
 
   private async getOrCreateUserCart(user: UserEntity) {
@@ -114,7 +132,7 @@ export class CartService {
 
   private calculateDiscount(
     subtotal: number,
-    discount?: DiscountEntity,
+    discount?: DiscountEntity | null | undefined,
   ): number {
     if (!discount) return 0;
 

@@ -37,6 +37,7 @@ export class DiscountController {
   }
 
   @Put(':id')
+  @HttpCode(HttpStatus.OK)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: DeepPartial<DiscountEntity>,

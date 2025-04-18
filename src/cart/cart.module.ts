@@ -7,6 +7,7 @@ import { CartService } from './cart.service';
 import { Module } from '@nestjs/common';
 import { ProductModule } from '../product/product.module';
 import { DiscountModule } from '../discount/discount.module';
+import { CartController } from './cart.controller';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DiscountModule } from '../discount/discount.module';
     ProductModule,
     DiscountModule,
   ],
+  controllers: [CartController],
   providers: [CartRepository, CartItemRepository, CartService],
   exports: [CartService],
 })

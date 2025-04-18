@@ -29,5 +29,5 @@ export class CartEntity {
     eager: true,
     nullable: true,
   })
-  discount?: DiscountEntity;
+  discount?: DiscountEntity | null;
 }
