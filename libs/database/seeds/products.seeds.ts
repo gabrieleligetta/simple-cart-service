@@ -15,10 +15,7 @@ async function bootstrap() {
   // 3) get the products repo
   const repo = ds.getRepository(ProductEntity);
 
-  // 4) empty the table
-  await repo.clear();
-
-  // 5) create 100 products
+  // 4) create 100 products
   const products: ProductEntity[] = [];
   for (let i = 0; i < 100; i++) {
     const p = repo.create({
@@ -30,11 +27,11 @@ async function bootstrap() {
     products.push(p);
   }
 
-  // 6) batch save
+  // 5) batch save
   await repo.save(products);
   console.log(`✅  Ho inserito ${products.length} prodotti di test.`);
 
-  // 7) close context and release the connection
+  // 6) close context and release the connection
   await app.close();
 }
 
