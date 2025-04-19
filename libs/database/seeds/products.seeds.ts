@@ -1,41 +1,47 @@
-// src/seeds/products.seed.ts
-import { NestFactory } from '@nestjs/core'; // il tuo root module
+import { NestFactory } from '@nestjs/core';
 import { DataSource } from 'typeorm';
 import { faker } from '@faker-js/faker';
 import { AppModule } from '../../../src/app.module';
 import { ProductEntity } from '../../../src/product/product.entity';
 
+// savage TOTAL value to test indexes performance on product table with 1 mln records
+const TOTAL = 1000000;
+const BATCH_SIZE = 10000;
+
 async function bootstrap() {
-  // 1) start an application context NestJS without HTTP server
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const appCtx = await NestFactory.createApplicationContext(AppModule, {
+    logger: false,
+  });
 
-  // 2) get the ds
-  const ds = app.get<DataSource>(DataSource);
-
-  // 3) get the products repo
+  const ds = appCtx.get<DataSource>(DataSource);
   const repo = ds.getRepository(ProductEntity);
 
-  // 4) create 100 products
-  const products: ProductEntity[] = [];
-  for (let i = 0; i < 100; i++) {
-    const p = repo.create({
-      name: faker.commerce.productName(),
-      description: faker.commerce.productDescription(),
-      price: Number(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
-      stock: faker.number.int({ min: 0, max: 1000 }),
-    });
-    products.push(p);
+  console.log(
+    `🔄 Starting seed of ${TOTAL} products in batches of ${BATCH_SIZE}…`,
+  );
+
+  for (let offset = 0; offset < TOTAL; offset += BATCH_SIZE) {
+    const batch: Partial<ProductEntity>[] = [];
+    const chunkCount = Math.min(BATCH_SIZE, TOTAL - offset);
+
+    for (let i = 0; i < chunkCount; i++) {
+      batch.push({
+        name: faker.commerce.productName(),
+        description: faker.commerce.productDescription(),
+        price: Number(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
+        stock: faker.number.int({ min: 0, max: 1000 }),
+      });
+    }
+
+    await repo.insert(batch);
+    console.log(`  ✅ Inserted ${offset + chunkCount} / ${TOTAL}`);
   }
 
-  // 5) batch save
-  await repo.save(products);
-  console.log(`✅  Ho inserito ${products.length} prodotti di test.`);
-
-  // 6) close context and release the connection
-  await app.close();
+  console.log(`🎉 Completed seeding ${TOTAL} products.`);
+  await appCtx.close();
 }
 
 bootstrap().catch((err) => {
-  console.error('Errore nel seeding:', err);
+  console.error('Seeder failed:', err);
   process.exit(1);
 });

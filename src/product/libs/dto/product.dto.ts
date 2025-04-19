@@ -1,22 +1,33 @@
-// src/product/dto/create-product.dto.ts
-import { IsNotEmpty, IsString, IsNumber, Min } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsInt,
+  Min,
+  MaxLength,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateProductDto {
   @IsString()
-  @IsNotEmpty()
+  @MaxLength(120)
   name: string;
 
+  @IsOptional()
   @IsString()
   description?: string;
 
-  @IsNumber()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   price: number;
 
-  @IsNumber()
+  @Type(() => Number)
+  @IsInt()
   @Min(0)
   stock: number;
 }
 
+// For update we simply make all fields optional
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
