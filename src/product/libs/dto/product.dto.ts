@@ -5,6 +5,7 @@ import {
   IsInt,
   Min,
   MaxLength,
+  Max,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
@@ -26,6 +27,9 @@ export class CreateProductDto {
   @Type(() => Number)
   @IsInt()
   @Min(0)
+  @Max(2147483647, {
+    message: 'productId must be a 32‑bit integer',
+  })
   stock: number;
 }
 

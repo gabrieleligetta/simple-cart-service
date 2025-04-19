@@ -1,7 +1,7 @@
 import {
+  ConflictException,
   Injectable,
   UnauthorizedException,
-  ConflictException,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -27,10 +27,8 @@ export class AuthService {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Crea e salva l'user
     const user = await this.userService.createUser(email, hashedPassword);
-    // Ritorna l'utente (o un DTO) senza password
-    return { id: user.id, email: user.email };
+    return this.toUserResponseDto(user);
   }
 
   async login(
