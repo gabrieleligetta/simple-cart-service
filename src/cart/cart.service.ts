@@ -73,7 +73,7 @@ export class CartService {
   async applyDiscount(user: UserEntity, code: string) {
     const cart = await this.getOrCreateUserCart(user);
     const discount = await this.discountService.findByCode(code);
-    if (!discount)
+    if (!discount || !discount.isActive)
       throw new NotFoundException('Discount not found or inactive');
     if (discount.expiration && discount.expiration < new Date())
       throw new BadRequestException('Discount expired');
@@ -119,7 +119,13 @@ export class CartService {
     const discountAmount = this.calculateDiscount(subtotal, cart.discount);
     const total = subtotal - discountAmount;
 
-    return { items, subtotal, discount: discountAmount, total };
+    return {
+      items,
+      subtotal,
+      discount_amount: discountAmount,
+      discount: cart.discount,
+      total,
+    };
   }
 
   private async getOrCreateUserCart(user: UserEntity) {
