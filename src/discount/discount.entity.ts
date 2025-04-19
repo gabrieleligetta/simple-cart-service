@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { CartEntity } from '../cart/entities/cart.entity';
 
 export enum DiscountType {
@@ -28,4 +35,16 @@ export class DiscountEntity {
 
   @Column({ type: 'timestamp', nullable: true })
   expiration?: Date;
+
+  @CreateDateColumn({
+    type: 'timestamp with time zone',
+    default: () => 'NOW()',
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp with time zone',
+    default: () => 'NOW()',
+  })
+  updatedAt: Date;
 }

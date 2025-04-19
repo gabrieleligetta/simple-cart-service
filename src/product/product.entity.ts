@@ -30,9 +30,15 @@ export class ProductEntity {
   @Column({ type: 'int', default: 0 })
   stock: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamp with time zone',
+    default: () => 'NOW()',
+  })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'timestamp with time zone',
+    default: () => 'NOW()',
+  })
   updatedAt: Date;
 }

@@ -1,10 +1,12 @@
 import {
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UserEntity } from '../../user/user.entity';
 import { CartItemEntity } from './cartItem.entity';
@@ -30,4 +32,16 @@ export class CartEntity {
     nullable: true,
   })
   discount?: DiscountEntity | null;
+
+  @CreateDateColumn({
+    type: 'timestamp with time zone',
+    default: () => 'NOW()',
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp with time zone',
+    default: () => 'NOW()',
+  })
+  updatedAt: Date;
 }
