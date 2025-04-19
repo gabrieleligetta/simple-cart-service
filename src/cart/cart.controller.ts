@@ -10,7 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/libs/guards/jwt-guard';
+import { JwtAuthGuard } from '../auth/libs/guards/jwt.guard';
 import { CartService } from './cart.service';
 import { UserRequest } from '../auth/libs/requests/user.request';
 import {

@@ -47,7 +47,7 @@ export class AuthService {
     }
 
     // Genera JWT payload
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
 
     const token = this.jwtService.sign(payload);
 
@@ -64,7 +64,7 @@ export class AuthService {
   }
 
   toUserResponseDto(user: UserDto): UserResponseDto {
-    const { id, email, createdAt, updatedAt } = user;
-    return <UserResponseDto>{ id, email, createdAt, updatedAt };
+    const { id, email, role, createdAt, updatedAt } = user;
+    return <UserResponseDto>{ id, email, role, createdAt, updatedAt };
   }
 }

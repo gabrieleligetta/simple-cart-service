@@ -93,7 +93,7 @@ describe('CartController (e2e)', () => {
       .then((res) => {
         expect(res.body.items).toEqual([]);
         expect(res.body.subtotal).toBeCloseTo(0);
-        expect(res.body.discount).toBeCloseTo(0);
+        expect(res.body.discount_amount).toBeCloseTo(0);
         expect(res.body.total).toBeCloseTo(0);
       });
   });
@@ -119,9 +119,9 @@ describe('CartController (e2e)', () => {
       .set(authHeader())
       .expect(HttpStatus.OK)
       .then((res) => {
-        const { subtotal, discount, total } = res.body;
+        const { subtotal, discount_amount, total } = res.body;
         expect(subtotal).toBeCloseTo(20);
-        expect(discount).toBeCloseTo(20 * 0.1);
+        expect(discount_amount).toBeCloseTo(20 * 0.1);
         expect(total).toBeCloseTo(20 - 2);
       });
   });
@@ -147,7 +147,7 @@ describe('CartController (e2e)', () => {
       .set(authHeader())
       .expect(HttpStatus.OK)
       .then((res) => {
-        expect(res.body.discount).toBeCloseTo(0);
+        expect(res.body.discount_amount).toBeCloseTo(0);
         expect(res.body.total).toBeCloseTo(res.body.subtotal);
       });
   });
@@ -179,9 +179,9 @@ describe('CartController (e2e)', () => {
       .set(authHeader())
       .expect(HttpStatus.OK)
       .then((res) => {
-        const { subtotal, discount, total } = res.body;
+        const { subtotal, discount_amount, total } = res.body;
         expect(subtotal).toBeCloseTo(10);
-        expect(discount).toBeCloseTo(10);
+        expect(discount_amount).toBeCloseTo(10);
         expect(total).toBeCloseTo(0);
       });
   });

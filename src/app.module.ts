@@ -9,6 +9,9 @@ import { ProductModule } from './product/product.module';
 import { CartModule } from './cart/cart.module';
 import { DiscountModule } from './discount/discount.module';
 import * as Joi from 'joi';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './auth/libs/guards/roles.guard';
+import { JwtAuthGuard } from './auth/libs/guards/jwt.guard';
 
 @Module({
   imports: [
@@ -28,12 +31,14 @@ import * as Joi from 'joi';
         POSTGRES_DB: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_DURATION: Joi.string().required(),
+        ADMIN_EMAIL: Joi.string().required(),
+        ADMIN_PASSWORD: Joi.string().required(),
         DROP_SCHEMA: Joi.boolean().required(),
       }),
       envFilePath: './.env',
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: RolesGuard }],
 })
 export class AppModule {}

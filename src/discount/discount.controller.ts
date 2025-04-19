@@ -11,12 +11,16 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/libs/guards/jwt-guard';
+import { JwtAuthGuard } from '../auth/libs/guards/jwt.guard';
 import { DiscountService } from './discount.service';
 import { CreateDiscountDto, UpdateDiscountDto } from './libs/discount.dto';
+import { Role } from '../user/libs/enums/roles.enum';
+import { Roles } from '../auth/libs/decorator/roles.decorator';
+import { RolesGuard } from '../auth/libs/guards/roles.guard';
 
 @Controller('discounts')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
 export class DiscountController {
   constructor(private discountService: DiscountService) {}
 

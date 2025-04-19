@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { AbstractRepositoryBase } from '../../libs/repo/abstact.repository';
+import { Role } from './libs/enums/roles.enum';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserRepository extends AbstractRepositoryBase<UserEntity> {
@@ -10,8 +12,31 @@ export class UserRepository extends AbstractRepositoryBase<UserEntity> {
     super(repo);
   }
 
-  /* No need for a dedicated method anymore */
-  async findByEmail(email: string) {
-    return this.findBy('email', email.toLowerCase());
+  /** On application startup, ensure an admin user exists */
+  async onModuleInit(): Promise<void> {
+    const adminEmail = process.env.ADMIN_EMAIL?.trim() || 'admin@test.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Secret!123!';
+
+    // Try to find existing admin
+    const existing = await this.repo.findOne({
+      where: { email: adminEmail },
+    });
+    if (existing) {
+      console.log(`Admin user already exists: ${adminEmail}`);
+      return;
+    }
+
+    // Hash password and create
+    const hashed = await bcrypt.hash(adminPassword, 10);
+    const admin = this.repo.create({
+      email: adminEmail,
+      password: hashed,
+      role: Role.ADMIN,
+    });
+    await this.repo.save(admin);
+
+    console.log(
+      `Created default admin user: ${adminEmail} (password from ADMIN_PASSWORD env)`,
+    );
   }
 }

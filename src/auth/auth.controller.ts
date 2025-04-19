@@ -9,7 +9,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './libs/guards/jwt-guard';
+import { JwtAuthGuard } from './libs/guards/jwt.guard';
 import { UserRequest } from './libs/requests/user.request';
 import { RegisterDto, LoginDto } from './libs/dto/auth.dto';
 import { UserResponseDto } from '../user/libs/dto/user-response.dto';

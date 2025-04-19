@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '../src/user/user.repository';
 import { DiscountType } from '../src/discount/discount.entity';
+import { Role } from '../src/user/libs/enums/roles.enum';
 
 describe('DiscountController (e2e)', () => {
   let app: INestApplication;
@@ -27,9 +28,14 @@ describe('DiscountController (e2e)', () => {
     const userRepo = moduleFixture.get<UserRepository>(UserRepository);
     const testUser = await userRepo.create({
       email: 'discount-test@example.com',
-      password: 'hashedpassword', // ensure to hash properly
+      password: 'hashedpassword',
+      role: Role.ADMIN,
     });
-    userToken = jwtService.sign({ id: testUser.id, email: testUser.email });
+    userToken = jwtService.sign({
+      id: testUser.id,
+      email: testUser.email,
+      role: Role.ADMIN,
+    });
   });
 
   afterAll(async () => {
