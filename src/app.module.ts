@@ -18,8 +18,6 @@ import { JwtAuthGuard } from './auth/libs/guards/jwt.guard';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        REDIS_PORT: Joi.number().required(),
-        REDIS_HOST: Joi.string().required(),
         POSTGRES_PORT: Joi.number().required(),
         POSTGRES_HOST: Joi.string().required(),
         POSTGRES_USER: Joi.string().required(),
