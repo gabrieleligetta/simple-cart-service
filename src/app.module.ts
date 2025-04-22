@@ -15,15 +15,11 @@ import { JwtAuthGuard } from './auth/libs/guards/jwt.guard';
 
 @Module({
   imports: [
-    DatabaseModule.register(),
-    AuthModule,
-    UserModule,
-    ProductModule,
-    DiscountModule,
-    CartModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
+        REDIS_PORT: Joi.number().required(),
+        REDIS_HOST: Joi.string().required(),
         POSTGRES_PORT: Joi.number().required(),
         POSTGRES_HOST: Joi.string().required(),
         POSTGRES_USER: Joi.string().required(),
@@ -37,6 +33,12 @@ import { JwtAuthGuard } from './auth/libs/guards/jwt.guard';
       }),
       envFilePath: './.env',
     }),
+    DatabaseModule.register(),
+    AuthModule,
+    UserModule,
+    ProductModule,
+    DiscountModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: RolesGuard }],
