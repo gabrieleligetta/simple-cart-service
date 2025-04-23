@@ -30,7 +30,7 @@ A Nest.js backend microservice for managing products, carts, and discounts in an
 
 ## Configuration
 
-you can copy .env.locale if you want to start the project locally with yarn start:dev or stick with the .env.docker if you want to start the app inside a docker container
+you can copy .env.locale into a .env file if you want to start the project locally with yarn start:dev or stick with the .env.docker if you want to start the app inside a docker container
 
 ```dotenv
 POSTGRES_HOST=postgres
