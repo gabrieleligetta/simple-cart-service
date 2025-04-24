@@ -43,9 +43,6 @@ DROP_SCHEMA=false
 JWT_SECRET=<your_jwt_secret>
 JWT_DURATION=20d
 
-REDIS_HOST=redis
-REDIS_PORT=6379
-
 ADMIN_EMAIL=admin@test.com
 ADMIN_PASSWORD=Secret!123!
 ```
