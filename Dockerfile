@@ -3,7 +3,7 @@ FROM node:20-alpine AS base
 
 WORKDIR /app
 
-# Copia i file di configurazione
+# Copy config files
 COPY package.json yarn.lock ./
 
 # ---------- Development stage ----------
@@ -11,23 +11,30 @@ FROM node:20-alpine AS dev
 
 WORKDIR /app
 
-# Copia i file di configurazione
+# Copy config files
 COPY package.json yarn.lock ./
 
-# Installa le dipendenze (ambiente di sviluppo)
-RUN yarn install
+# Install dependencies (development)
+RUN yarn install \
+  # Install Nest CLI globally for `nest` command availability
+  && yarn global add @nestjs/cli
 
-# Copia tutto il codice sorgente
+# Copy source code
 COPY . .
 
-# Compila opzionalmente (Nest compila on-the-fly in dev)
+# Build application (optional, as Nest can compile on-the-fly in dev)
 RUN yarn build
 
+# Expose port
 EXPOSE 3000
-CMD ["yarn", "start:dev"]
+
+# Use Nest CLI directly for hot-reload in dev
+CMD ["nest", "start", "--watch"]
 
 # ---------- Local stage ----------
 FROM dev AS local
+
+# (inherits dev with Nest CLI installed)
 
 # ---------- Production build stage ----------
 FROM node:20-alpine AS build
@@ -45,11 +52,14 @@ FROM node:20-alpine AS prod
 
 WORKDIR /app
 
-# Copia solo i file necessari
+# Copy only necessary files
 COPY package.json yarn.lock ./
 RUN yarn install --production
 
 COPY --from=build /app/dist ./dist
 
+# Expose port
 EXPOSE 3000
+
+# Start the compiled application
 CMD ["node", "dist/main.js"]
