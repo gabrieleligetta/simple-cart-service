@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -18,7 +19,7 @@ import { Role } from '../user/libs/enums/roles.enum';
 import { Roles } from '../auth/libs/decorator/roles.decorator';
 import { RolesGuard } from '../auth/libs/guards/roles.guard';
 
-@Controller('discounts')
+@Controller({ path: 'discounts', version: '1' })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
 export class DiscountController {
@@ -46,7 +47,7 @@ export class DiscountController {
   }
 
   /** Update an existing discount */
-  @Put(':id')
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   update(
     @Param('id', ParseIntPipe) id: number,

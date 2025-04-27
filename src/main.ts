@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +11,11 @@ async function bootstrap() {
       transform: true, // auto-transform payloads to your DTO classes
     }),
   );
+  app.enableVersioning({
+    type: VersioningType.HEADER,
+    header: 'X-API-Version',
+    defaultVersion: '1',
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

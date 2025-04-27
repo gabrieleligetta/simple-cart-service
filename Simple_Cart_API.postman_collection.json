@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "9c3bf072-0204-4a44-9997-9bc9101c6e78",
-		"name": "Simple‑Cart • Cart API",
+		"name": "Simple‑Cart • Cart API",
 		"description": "Piccolo progetto di gestione carrello",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "8881883"
@@ -11,30 +11,52 @@
 			"name": "Product",
 			"item": [
 				{
-					"name": "Get single product",
+					"name": "Get single product",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/products/1",
+							"raw": "{{baseUrl}}/products/1111",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"products",
-								"1"
+								"1111"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "List products",
+					"name": "List products",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/products?page=1&limit=20",
+							"raw": "{{baseUrl}}/products?name_contains=small&page=3&limit=1000&sort=price&order=ASC",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -43,12 +65,24 @@
 							],
 							"query": [
 								{
+									"key": "name_contains",
+									"value": "small"
+								},
+								{
 									"key": "page",
-									"value": "1"
+									"value": "3"
 								},
 								{
 									"key": "limit",
-									"value": "20"
+									"value": "1000"
+								},
+								{
+									"key": "sort",
+									"value": "price"
+								},
+								{
+									"key": "order",
+									"value": "ASC"
 								}
 							]
 						}
@@ -56,18 +90,23 @@
 					"response": []
 				},
 				{
-					"name": "Create product",
+					"name": "Create product",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Wireless Mouse\",\n  \"description\": \"Ergonomic 2.4 GHz mouse\",\n  \"price\": 29.99,\n  \"stock\": 100\n}"
+							"raw": "{\n  \"name\": \"Wireless Mouse\",\n  \"description\": \"Ergonomic 2.4 GHz mouse\",\n  \"price\": 29.99,\n  \"stock\": 100\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/products",
@@ -82,18 +121,23 @@
 					"response": []
 				},
 				{
-					"name": "Update product",
+					"name": "Update product",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "X-API-Version",
+								"value": "1",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"price\": 24.99,\n  \"stock\": 150\n}"
+							"raw": "{\n  \"price\": 31.86\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/products/1",
@@ -109,18 +153,29 @@
 					"response": []
 				},
 				{
-					"name": "Delete product",
+					"name": "Delete product",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/products/1",
+							"raw": "{{baseUrl}}/products/5",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"products",
-								"1"
+								"5"
 							]
 						}
 					},
@@ -135,7 +190,18 @@
 					"name": "login",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  \"email\": \"gabligetta@gmail.com\",\n  \"password\": \"Test!123\"\n}",
@@ -146,12 +212,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{HOST}}:{{PORT}}/auth/login",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/auth/login",
 							"host": [
-								"{{HOST}}"
+								"{{baseUrl}}"
 							],
-							"port": "{{PORT}}",
 							"path": [
 								"auth",
 								"login"
@@ -164,10 +228,21 @@
 					"name": "register",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"gabligetta@gmail.com\",\n  \"password\": \"Test!123\"\n}",
+							"raw": "{\n  \"email\": \"gabligetta+04@gmail.com\",\n  \"password\": \"Test!123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -175,12 +250,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{HOST}}:{{PORT}}/auth/register",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/auth/register",
 							"host": [
-								"{{HOST}}"
+								"{{baseUrl}}"
 							],
-							"port": "{{PORT}}",
 							"path": [
 								"auth",
 								"register"
@@ -203,15 +276,18 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "http://{{HOST}}:{{PORT}}/auth/me",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/auth/me",
 							"host": [
-								"{{HOST}}"
+								"{{baseUrl}}"
 							],
-							"port": "{{PORT}}",
 							"path": [
 								"auth",
 								"me"
@@ -244,6 +320,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -261,6 +347,16 @@
 				{
 					"name": "Add Product to Cart",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -272,11 +368,16 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"productId\": 1, \"quantity\": 2 }"
+							"raw": "{ \"productId\": 1993, \"quantity\": 3 }"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/cart/add",
@@ -315,11 +416,16 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"productId\": 73, \"quantity\": 1 }"
+							"raw": "{ \"productId\": 1993, \"quantity\": 1 }"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/cart/remove",
@@ -358,11 +464,16 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"productId\": 1993 , \"quantity\": 1 }"
+							"raw": "{ \"productId\": 1993 , \"quantity\": null }"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/cart/remove",
@@ -401,11 +512,16 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"code\": \"NEW10\" }"
+							"raw": "{ \"code\": \"FIX10\" }"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/cart/add/discount",
@@ -445,6 +561,11 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -481,7 +602,9 @@
 									"pm.collectionVariables.set(\"discountId\", jsonData.id);"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {
+
+								}
 							}
 						}
 					],
@@ -506,6 +629,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
 								"type": "text"
 							}
 						],
@@ -544,6 +672,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -577,6 +715,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -605,7 +753,7 @@
 								}
 							]
 						},
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Authorization",
@@ -615,6 +763,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
 								"type": "text"
 							}
 						],
@@ -654,6 +807,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "X-api-version",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -675,14 +838,23 @@
 			"name": "status_up",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "X-api-version",
+						"value": "1",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "http://{{HOST}}:{{PORT}}",
-					"protocol": "http",
+					"raw": "{{baseUrl}}",
 					"host": [
-						"{{HOST}}"
-					],
-					"port": "{{PORT}}"
+						"{{baseUrl}}"
+					]
 				}
 			},
 			"response": []

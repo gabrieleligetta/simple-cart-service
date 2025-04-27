@@ -19,7 +19,7 @@ import {
   RemoveFromCartDto,
 } from './libs/cart.dto';
 
-@Controller('cart')
+@Controller({ path: 'cart', version: '1' })
 @UseGuards(JwtAuthGuard)
 export class CartController {
   constructor(private readonly cartService: CartService) {}

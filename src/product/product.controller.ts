@@ -11,12 +11,13 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './libs/dto/product.dto';
 import { PaginatedQuery } from '../../libs/dto/paginatedQuery.dto';
 
-@Controller('products')
+@Controller({ path: 'products', version: '1' })
 export class ProductController {
   constructor(private readonly products: ProductService) {}
 
@@ -35,7 +36,7 @@ export class ProductController {
     return this.products.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
     return this.products.update(id, dto);
   }

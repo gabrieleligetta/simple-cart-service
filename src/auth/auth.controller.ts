@@ -14,7 +14,7 @@ import { UserRequest } from './libs/requests/user.request';
 import { RegisterDto, LoginDto } from './libs/dto/auth.dto';
 import { UserResponseDto } from '../user/libs/dto/user-response.dto';
 
-@Controller('auth')
+@Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
