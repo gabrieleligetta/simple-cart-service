@@ -68,7 +68,7 @@ describe('ProductController (e2e)', () => {
     // UPDATE
     const updateDto = { price: 19.99, stock: 100 };
     const updateRes = await request(httpServer)
-      .put(`/products/${id}`)
+      .patch(`/products/${id}`)
       .send(updateDto)
       .expect(HttpStatus.OK);
 

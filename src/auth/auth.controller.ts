@@ -13,17 +13,20 @@ import { JwtAuthGuard } from './libs/guards/jwt.guard';
 import { UserRequest } from './libs/requests/user.request';
 import { RegisterDto, LoginDto } from './libs/dto/auth.dto';
 import { UserResponseDto } from '../user/libs/dto/user-response.dto';
+import { Public } from './libs/decorator/public.decorator';
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto.email, dto.password);
   }
 
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto) {

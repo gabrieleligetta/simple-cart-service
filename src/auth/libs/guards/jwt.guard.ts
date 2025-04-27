@@ -6,9 +6,15 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import * as jwt from 'jsonwebtoken';
 import { UserRequest } from '../requests/user.request';
+import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
+import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
   handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
     // If Passport threw an error or no user is available, handle them
     if (err || !user) {
@@ -30,7 +36,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // For HTTP context only, just call the parent canActivate
-    return super.canActivate(context) as Promise<boolean>;
+    // if the handler or controller is marked @Public(), skip auth entirely
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
+    }
+    // otherwise proceed with normal JWT check
+    return (await super.canActivate(context)) as boolean;
   }
 }

@@ -14,7 +14,10 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(ctx: ExecutionContext): boolean {
-    const allowed = this.reflector.get<Role[]>(ROLES_KEY, ctx.getHandler());
+    const allowed = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      ctx.getHandler(),
+      ctx.getClass(),
+    ]);
     if (!allowed || allowed.length === 0) {
       // no roles metadata ⇒ public endpoint
       return true;

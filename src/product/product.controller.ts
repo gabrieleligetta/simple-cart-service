@@ -16,7 +16,9 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './libs/dto/product.dto';
 import { PaginatedQuery } from '../../libs/dto/paginatedQuery.dto';
+import { Public } from '../auth/libs/decorator/public.decorator';
 
+@Public()
 @Controller({ path: 'products', version: '1' })
 export class ProductController {
   constructor(private readonly products: ProductService) {}
