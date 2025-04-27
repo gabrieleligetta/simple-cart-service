@@ -84,8 +84,36 @@ describe('CartController (e2e)', () => {
 
   const authHeader = () => ({ Authorization: `Bearer ${userToken}` });
 
+  // --- public /unauthenticated access tests ---
+  it('GET /cart without token should be 401', () => {
+    return request(httpServer).get('/cart').expect(HttpStatus.UNAUTHORIZED);
+  });
+  it('POST /cart/add without token should be 401', () => {
+    return request(httpServer)
+      .post('/cart/add')
+      .send({ productId, quantity: 1 })
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+  it('POST /cart/add/discount without token should be 401', () => {
+    return request(httpServer)
+      .post('/cart/add/discount')
+      .send({ code: 'PCT10' })
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+  it('POST /cart/remove without token should be 401', () => {
+    return request(httpServer)
+      .post('/cart/remove')
+      .send({ productId })
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+  it('POST /cart/remove/discount without token should be 401', () => {
+    return request(httpServer)
+      .post('/cart/remove/discount')
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+
+  // --- authenticated behavior ---
   it('should create a fresh cart and have zero totals', async () => {
-    // Fetch empty cart
     await request(httpServer)
       .get('/cart')
       .set(authHeader())
@@ -99,21 +127,18 @@ describe('CartController (e2e)', () => {
   });
 
   it('should add items and apply percentage discount correctly', async () => {
-    // Add 2 units → subtotal = 20
     await request(httpServer)
       .post('/cart/add')
       .set(authHeader())
       .send({ productId, quantity: 2 })
       .expect(HttpStatus.OK);
 
-    // Apply percentage discount
     await request(httpServer)
       .post('/cart/add/discount')
       .set(authHeader())
       .send({ code: 'PCT10' })
       .expect(HttpStatus.OK);
 
-    // Retrieve cart and assert
     await request(httpServer)
       .get('/cart')
       .set(authHeader())
@@ -135,13 +160,11 @@ describe('CartController (e2e)', () => {
   });
 
   it('should remove percentage discount', async () => {
-    // Remove discount
     await request(httpServer)
       .post('/cart/remove/discount')
       .set(authHeader())
       .expect(HttpStatus.OK);
 
-    // Cart returns to no-discount values
     await request(httpServer)
       .get('/cart')
       .set(authHeader())
@@ -153,27 +176,24 @@ describe('CartController (e2e)', () => {
   });
 
   it('should apply fixed discount and not go negative', async () => {
-    // Clear cart items
     await request(httpServer)
       .post('/cart/remove')
       .set(authHeader())
       .send({ productId })
       .expect(HttpStatus.OK);
-    // Add 1 unit → subtotal = 10
+
     await request(httpServer)
       .post('/cart/add')
       .set(authHeader())
       .send({ productId, quantity: 1 })
       .expect(HttpStatus.OK);
 
-    // Apply fixed discount
     await request(httpServer)
       .post('/cart/add/discount')
       .set(authHeader())
       .send({ code: 'FIXED20' })
       .expect(HttpStatus.OK);
 
-    // Assert fixed cap behavior
     await request(httpServer)
       .get('/cart')
       .set(authHeader())
@@ -187,8 +207,6 @@ describe('CartController (e2e)', () => {
   });
 
   it('should error when removing non-existent discount', async () => {
-    // Ensure no discount present
-
     await request(httpServer)
       .post('/cart/remove/discount')
       .set(authHeader())
