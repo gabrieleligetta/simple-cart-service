@@ -6,7 +6,6 @@ import {
 import { CartRepository } from './repositories/cart.repository';
 import { UserEntity } from '../user/user.entity';
 import { DiscountService } from '../discount/discount.service';
-import { ProductService } from '../product/product.service';
 import { CartItemEntity } from './entities/cartItem.entity';
 import { ProductEntity } from '../product/product.entity';
 import { DiscountEntity, DiscountType } from '../discount/discount.entity';
@@ -15,7 +14,6 @@ import { DiscountEntity, DiscountType } from '../discount/discount.entity';
 export class CartService {
   constructor(
     private cartRepository: CartRepository,
-    private productService: ProductService,
     private discountService: DiscountService,
   ) {}
 
@@ -81,9 +79,6 @@ export class CartService {
 
   async applyDiscount(user: UserEntity, code: string) {
     await this.cartRepository.transaction(async (cartRepo) => {
-      const manager = cartRepo.manager;
-      const discRepo = manager.getRepository(DiscountEntity);
-
       const cart = await cartRepo.findOne({ where: { user: { id: user.id } } });
       if (!cart) throw new NotFoundException('Cart not found');
 
