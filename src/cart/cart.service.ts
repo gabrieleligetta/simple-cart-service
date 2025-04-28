@@ -5,90 +5,111 @@ import {
 } from '@nestjs/common';
 import { CartRepository } from './repositories/cart.repository';
 import { UserEntity } from '../user/user.entity';
-import { DiscountEntity, DiscountType } from '../discount/discount.entity';
-import { CartItemRepository } from './repositories/cartItem.repository';
 import { DiscountService } from '../discount/discount.service';
 import { ProductService } from '../product/product.service';
+import { CartItemEntity } from './entities/cartItem.entity';
+import { ProductEntity } from '../product/product.entity';
+import { DiscountEntity, DiscountType } from '../discount/discount.entity';
 
 @Injectable()
 export class CartService {
   constructor(
     private cartRepository: CartRepository,
-    private cartItemRepository: CartItemRepository,
     private productService: ProductService,
     private discountService: DiscountService,
   ) {}
 
   async addProduct(user: UserEntity, productId: number, quantity: number) {
-    const cart = await this.getOrCreateUserCart(user);
-    const product = await this.productService.findOne(productId);
-    if (!product) throw new NotFoundException('Product not found');
-    if (product.stock < quantity)
-      throw new BadRequestException('Insufficient stock');
+    await this.cartRepository.transaction(async (cartRepo) => {
+      const manager = cartRepo.manager;
+      const itemRepo = manager.getRepository(CartItemEntity);
+      const prodRepo = manager.getRepository(ProductEntity);
 
-    let item = await this.cartItemRepository.findByCartAndProduct(
-      cart.id,
-      productId,
-    );
-    if (item) {
-      if (product.stock < item.quantity + quantity)
-        throw new BadRequestException(
-          'Insufficient stock for increased quantity',
-        );
-      item.quantity += quantity;
-      await this.cartItemRepository.update(item.id, {
-        quantity: item.quantity,
-      });
-    } else {
-      await this.cartItemRepository.create({
-        cart,
-        product,
-        quantity,
-      });
-    }
+      // 1) Lookup or create cart
+      let cart = await cartRepo.findOne({ where: { user: { id: user.id } } });
+      if (!cart) {
+        cart = cartRepo.create({ user, items: [] });
+        cart = await cartRepo.save(cart);
+      }
 
+      // 2) Fetch product & stock checks
+      const product = await prodRepo.findOne({ where: { id: productId } });
+      if (!product) throw new NotFoundException('Product not found');
+      if (product.stock < quantity)
+        throw new BadRequestException('Insufficient stock');
+
+      // 3) Add or update cart‐item
+      let item = await itemRepo.findOne({
+        where: { cart: { id: cart.id }, product: { id: productId } },
+      });
+      if (item) {
+        if (product.stock < item.quantity + quantity)
+          throw new BadRequestException(
+            'Insufficient stock for increased quantity',
+          );
+        item.quantity += quantity;
+        await itemRepo.save(item);
+      } else {
+        item = itemRepo.create({ cart, product, quantity });
+        await itemRepo.save(item);
+      }
+    });
     return await this.viewCart(user);
   }
 
   async removeProduct(user: UserEntity, productId: number, quantity?: number) {
-    const cart = await this.getOrCreateUserCart(user);
-    const item = await this.cartItemRepository.findByCartAndProduct(
-      cart.id,
-      productId,
-    );
-    if (!item) throw new NotFoundException('Product not in cart');
+    await this.cartRepository.transaction(async (cartRepo) => {
+      const manager = cartRepo.manager;
+      const itemRepo = manager.getRepository(CartItemEntity);
 
-    if (!quantity || item.quantity <= quantity) {
-      await this.cartItemRepository.delete(item.id);
-    } else {
-      item.quantity -= quantity;
-      await this.cartItemRepository.update(item.id, {
-        quantity: item.quantity,
+      const cart = await cartRepo.findOne({ where: { user: { id: user.id } } });
+      if (!cart) throw new NotFoundException('Cart not found');
+
+      const item = await itemRepo.findOne({
+        where: { cart: { id: cart.id }, product: { id: productId } },
       });
-    }
+      if (!item) throw new NotFoundException('Product not in cart');
 
-    return await this.viewCart(user);
+      if (!quantity || item.quantity <= quantity) {
+        await itemRepo.delete(item.id);
+      } else {
+        item.quantity -= quantity;
+        await itemRepo.save(item);
+      }
+    });
   }
 
   async applyDiscount(user: UserEntity, code: string) {
-    const cart = await this.getOrCreateUserCart(user);
-    const discount = await this.discountService.findByCode(code);
-    if (!discount || !discount.isActive)
-      throw new NotFoundException('Discount not found or inactive');
-    if (discount.expiration && discount.expiration < new Date())
-      throw new BadRequestException('Discount expired');
+    await this.cartRepository.transaction(async (cartRepo) => {
+      const manager = cartRepo.manager;
+      const discRepo = manager.getRepository(DiscountEntity);
 
-    cart.discount = discount;
-    await this.cartRepository.update(cart.id, { discount });
+      const cart = await cartRepo.findOne({ where: { user: { id: user.id } } });
+      if (!cart) throw new NotFoundException('Cart not found');
+
+      const discount = await this.discountService.findByCode(code);
+      if (!discount || !discount.isActive)
+        throw new NotFoundException('Discount not found or inactive');
+      if (discount.expiration && discount.expiration < new Date())
+        throw new BadRequestException('Discount expired');
+
+      cart.discount = discount;
+      await cartRepo.save(cart);
+    });
     return await this.viewCart(user);
   }
 
   async removeDiscount(user: UserEntity) {
-    const cart = await this.getOrCreateUserCart(user);
-    if (!cart.discount) {
-      throw new NotFoundException('There is no active discount on this cart');
-    }
-    await this.cartRepository.update(cart.id, { discount: null });
+    await this.cartRepository.transaction(async (cartRepo) => {
+      const cart = await cartRepo.findOne({ where: { user: { id: user.id } } });
+      if (!cart) throw new NotFoundException('Cart not found');
+      if (!cart.discount) {
+        throw new NotFoundException('There is no active discount on this cart');
+      }
+
+      cart.discount = null;
+      await cartRepo.save(cart);
+    });
     return await this.viewCart(user);
   }
 

@@ -12,11 +12,30 @@ import {
   LessThan,
   FindOperator,
   ILike,
+  DataSource,
 } from 'typeorm';
 import { PaginatedQuery, PaginatedResult } from '../dto/paginatedQuery.dto';
 
 export abstract class AbstractRepositoryBase<TEntity extends ObjectLiteral> {
-  protected constructor(protected readonly repo: Repository<TEntity>) {}
+  protected constructor(
+    protected readonly repo: Repository<TEntity>,
+    protected readonly dataSource: DataSource,
+  ) {}
+
+  /**
+   * Execute a callback in a single transaction.
+   * The callback receives a fresh repository bound to the transactional manager.
+   */
+  async transaction<T>(
+    work: (repo: Repository<TEntity>) => Promise<T>,
+  ): Promise<T> {
+    return this.dataSource.transaction(async (manager) => {
+      const transactionalRepo = manager.getRepository<TEntity>(
+        this.repo.metadata.target as any,
+      );
+      return work(transactionalRepo);
+    });
+  }
 
   async create(data: DeepPartial<TEntity>): Promise<TEntity> {
     const entity = this.repo.create(data);

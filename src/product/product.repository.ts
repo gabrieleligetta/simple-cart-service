@@ -1,7 +1,7 @@
 // src/product/product.repository.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { ProductEntity } from './product.entity';
 import { AbstractRepositoryBase } from '../../libs/repo/abstact.repository';
@@ -10,8 +10,9 @@ import { AbstractRepositoryBase } from '../../libs/repo/abstact.repository';
 export class ProductRepository extends AbstractRepositoryBase<ProductEntity> {
   constructor(
     @InjectRepository(ProductEntity) repo: Repository<ProductEntity>,
+    dataSource: DataSource,
   ) {
-    super(repo);
+    super(repo, dataSource);
   }
 
   async onModuleInit() {

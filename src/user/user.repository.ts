@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { AbstractRepositoryBase } from '../../libs/repo/abstact.repository';
 import { Role } from './libs/enums/roles.enum';
@@ -8,8 +8,11 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserRepository extends AbstractRepositoryBase<UserEntity> {
-  constructor(@InjectRepository(UserEntity) repo: Repository<UserEntity>) {
-    super(repo);
+  constructor(
+    @InjectRepository(UserEntity) repo: Repository<UserEntity>,
+    dataSource: DataSource,
+  ) {
+    super(repo, dataSource);
   }
 
   /** On application startup, ensure an admin user exists */

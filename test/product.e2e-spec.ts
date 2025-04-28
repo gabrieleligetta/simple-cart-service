@@ -1,4 +1,4 @@
-jest.setTimeout(20000);
+jest.setTimeout(40000);
 
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

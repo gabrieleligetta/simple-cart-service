@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CartEntity } from '../entities/cart.entity';
 import { AbstractRepositoryBase } from '../../../libs/repo/abstact.repository';
 
@@ -9,8 +9,9 @@ export class CartRepository extends AbstractRepositoryBase<CartEntity> {
   constructor(
     @InjectRepository(CartEntity)
     repo: Repository<CartEntity>,
+    dataSource: DataSource,
   ) {
-    super(repo);
+    super(repo, dataSource);
   }
 
   async findByUserId(userId: number): Promise<CartEntity | null> {
